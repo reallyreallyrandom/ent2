@@ -1,0 +1,83 @@
+ea_iid  -v  /tmp/mata-hari-10mb-x8bit.bin
+Opening file: '/tmp/mata-hari-10mb-x8bit.bin'
+Loaded 10000000 samples of 256 distinct 8-bit-wide symbols
+Number of Binary samples: 80000000
+Calculating baseline statistics...
+	Raw Mean: 127.137822
+	Median: 127.000000
+	Binary: false
+
+Literal MCV Estimate: mode = 39996, p-hat = 0.0039995999999999999, p_u = 0.0040510108918163411
+Bitstring MCV Estimate: mode = 40108361, p-hat = 0.50135451249999996, p_u = 0.50149850520805828
+H_original: 7.947502
+H_bitstring: 0.995683
+min(H_original, 8 X H_bitstring): 7.947502          <<<< Hmin.= 7.9 bits/byte. Whoopie!
+
+Chi square independence
+	score = 64919.272275
+	degrees of freedom = 65280
+	p-value = 0.840940
+
+Chi square goodness of fit
+	score = 2489.421745
+	degrees of freedom = 2295
+	p-value = 0.002538
+
+** Passed chi square tests
+
+LiteralLongest Repeated Substring results
+	P_col: 0.0039066
+	Length of LRS: 5
+	Pr(X >= 1) rounds to 1, but there is precision loss. The test verdict is still expected to be valid.
+** Passed length of longest repeated substring test
+
+Beginning initial tests...
+
+Initial test results
+              excursion: 463049
+     numDirectionalRuns: 6.6688e+06
+     lenDirectionalRuns: 9
+  numIncreasesDecreases: 5.01931e+06
+          numRunsMedian: 5.00035e+06
+          lenRunsMedian: 23
+           avgCollision: 19.7551
+           maxCollision: 74
+         periodicity(1): 39066
+         periodicity(2): 39107
+         periodicity(8): 38874
+        periodicity(16): 38862
+        periodicity(32): 38891
+          covariance(1): 1.61632e+11
+          covariance(2): 1.61654e+11
+          covariance(8): 1.61637e+11
+         covariance(16): 1.61612e+11
+         covariance(32): 1.61639e+11
+            compression: 1.06741e+07
+
+Beginning permutation tests... these may take some time
+ 99.13% of Permutuation test rounds, 100.00% of Permutuation tests
+
+                statistic  C[i][0]  C[i][1]  C[i][2]
+----------------------------------------------------
+                excursion       6       0    9457
+       numDirectionalRuns       6       0     106
+       lenDirectionalRuns       1       6       0
+    numIncreasesDecreases       9       0       6
+            numRunsMedian      10       0       6
+            lenRunsMedian      10       1       5
+             avgCollision       6       0     235
+             maxCollision     128       2       4
+           periodicity(1)       6       0      11
+           periodicity(2)       6       0      12
+           periodicity(8)      15       0       6
+          periodicity(16)      52       0       6
+          periodicity(32)      14       0       6
+            covariance(1)       7       0       6
+            covariance(2)       6       0      17
+            covariance(8)       6       0       7
+           covariance(16)     193       0       6
+           covariance(32)      12       0       6
+              compression       8       0       6
+(* denotes failed test)
+
+** Passed IID permutation tests
