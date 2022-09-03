@@ -7,7 +7,8 @@ Creation of a new accurate and easy to use randomness test suite tailored for TR
 Perhaps looking like so:-
 
 
----------------
+
+```
 Permuted compression ratio, (p = 0.9855), FAIL.
 Runs,                       (p = 0.4000), PASS.
 Serial correlation,         (p = 0.0004), FAIL.
@@ -24,4 +25,5 @@ Min. entropy,               (p = 0.0002), FAIL.
 Min. entropy < 5.9103 bits per byte.
 
 SAMPLES UNSUITABLE FOR CRYPTOGRAPHY @ α = 0.0500.
-----------------
+```
+
