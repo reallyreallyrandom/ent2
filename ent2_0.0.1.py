@@ -34,11 +34,13 @@ SOFTWARE.
 
 # spell-checker: disable #
 
-import enum
 import bz2
+import enum
 import lzma
 import math
+import random
 import sys
+
 import numpy as np
 import scipy.stats
 
@@ -46,7 +48,7 @@ import scipy.stats
 ALPHA = 0.05
 
 
-# The alpha boundries.
+# The alpha boundaries.
 class critical_ps(float, enum.Enum):
     left_outer = ALPHA / 2
     left_inner = ALPHA
@@ -61,15 +63,23 @@ def print_result(test_name, result, p_value):
     print(test_name, ",     ", "p = ", v, ",", result)
 
 
+# FIXME This makes random data internally, which makes it easier to test this code.
+# =================================================================================
+def make_samples(n):
+    return random.randbytes(n)
+
+
 
 # Read in file.
-samples = []
-filename = str(sys.argv[1])
-with open(filename, "rb") as infile:
-    samples = infile.read()           # byte array.
-    # Check that the file is the correct length.
-    assert len(samples) == 512000
-
+# FIXME This is commented out to allow internal randomness generation.
+# ====================================================================
+# samples = []
+# filename = str(sys.argv[1])
+# with open(filename, "rb") as infile:
+#     samples = infile.read()           # byte array.
+#     # Check that the file is the correct length.
+#     assert len(samples) == 512000
+samples = make_samples(512_000)     # FIXME Delete this line for production.
 # 8 bit numpy array.
 samples_np = np.array(bytearray(samples),  dtype=np.uint8)       
 
@@ -86,10 +96,8 @@ sigma_sample_mu = SIGMA_UNIFORM / math.sqrt(samples_np.size)
 
 # Perform the test.
 z_score = (sample_mu - MU) / (sigma_sample_mu)
-p_value = scipy.stats.norm.sf(z_score)   
-if z_score > 0:
-    p_value += 0.5
-if p_value > critical_ps.left_inner and p_value < critical_ps.right_inner:
+p_value = scipy.stats.norm.cdf(z_score)   # Has to be .cdf() to allow a 0.0 < p < 1.0 range.
+if p_value > critical_ps.left_outer and p_value < critical_ps.right_outer:
     result = "PASS"
 else:
     result = "FAIL"
@@ -113,7 +121,7 @@ lzma_compressed_size = len(lzma.compress(
 compressed_size = bz2_compressed_size + lzma_compressed_size
 
 # Perform the test.
-if compressed_size >= 1_026_684:     # Value confirmed for 512 kB sample size.
+if compressed_size >= 1_026_685:     # Value confirmed for 512 kB sample size.
     result = "PASS"
 else:
     result = "FAIL"
