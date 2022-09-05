@@ -18,6 +18,7 @@ and spaces) is obviously correlated.
 import json
 import lzma
 import bz2
+import os
 import random
 import statistics
 import time
@@ -28,8 +29,8 @@ import numpy as np
 
 
 X_LABEL = "Ratio"
-FILENAME = "permutation/sample-64kB.json"
-NO_SAMPLES = 64_000
+FILENAME = "permutation/permutation-512kB.json"
+NO_SAMPLES = 512_000
 NO_TRIALS = 100_000
 
 
@@ -41,12 +42,12 @@ lzma_filters = [
 
 
 def make_samples(n):
-    for _ in range(n):
-        yield random.getrandbits(8)
-
+    return os.urandom(n)
+    
 
 #  The specific testing code goes into here.
 def test_trials():
+    rng = np.random.default_rng()    # PCG XSL RR 128/64 random number generator.
     ratios = np.empty([0], dtype=float)
 
     for i in range(NO_TRIALS):
@@ -56,7 +57,7 @@ def test_trials():
         lzma_compressed_size = len(lzma.compress(
             samples, format=lzma.FORMAT_RAW, filters=lzma_filters))
 
-        random.shuffle(samples)
+        rng.shuffle(samples)
 
         bz2_compressed_shuffled_size = len(bz2.compress(
             samples, compresslevel=9))
@@ -66,8 +67,6 @@ def test_trials():
         ratio = (bz2_compressed_shuffled_size + lzma_compressed_shuffled_size) / \
             (bz2_compressed_size + lzma_compressed_size)
         ratios = np.append(ratios, ratio)
-        # print("NTS =", ratio)
-        # print(compressed_shuffled_size, ",", compressed_size)
     return ratios
 
 

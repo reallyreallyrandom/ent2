@@ -6,8 +6,8 @@ deviation from the average.
 See https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-90B.pdf section 5.1.1.
 
 It has been tested against the NIST `ea_iid` test of SP800-90b. That's why there
-is the extra `def make_samples(n)` routine (commented out). Generate a file as:
-`dd if=/dev/urandom  of=/tmp/urandom-ex   bs=1000   count=512` and feed it into both
+is the extra `def make_samples()` routine (commented out). Generate a file as:
+`dd if=/dev/urandom  of=/tmp/urandom-512kB   bs=1000   count=512` and feed it into both
 to verify this code.
 """
 
@@ -26,31 +26,33 @@ import numpy as np
 
 
 X_LABEL = "Value"
-FILENAME = "/tmp/excursion-64kB.json"
-NO_SAMPLES = 64_000
-NO_TRIALS = 1000
+FILENAME = "calibration/excursion/excursion-512kB.json"
+NO_SAMPLES = 512_000
+NO_TRIALS = 100_000
 PROGRESS_DIVISOR = 10
 
 
 """
 This allows input of an external file that can also be
-fed into the NIST test for code validation.
+fed into the NIST IID test for code validation.
 """
-# def make_samples(n):
-#     with open("/tmp/urandom-ex", mode='rb') as file:   # b is important -> binary
+# def make_samples():
+#     with open("/tmp/urandom-512kB", mode='rb') as file:   # b is important -> binary
 #         fileContent = file.read()
 #     return fileContent
 
 
 #  The specific testing code goes into here.
 def test_trials():
+    rng = np.random.default_rng()    # PCG XSL RR 128/64 random number generator.
     excursions = np.empty([0], dtype=float)
 
     for i in range(NO_TRIALS):
         #  Print progress, but not too quickly.
         if i % PROGRESS_DIVISOR == 0:
             print(i)
-        samples = np.random.randint(256, size=NO_SAMPLES)
+        # samples = np.array(bytearray(make_samples()), dtype=np.uint8)    # Comment this line for production calibration.
+        samples = rng.integers(low=0, high=256, size=NO_SAMPLES)    # Uncomment this line for production calibration.
         average = np.mean(samples)
         cumsum = np.cumsum(samples)
         trial_excursions =  np.empty([NO_SAMPLES], dtype=float)
@@ -67,7 +69,7 @@ then = time.time()
 all_statistics = test_trials()
 now = time.time()
 mean = statistics.mean(all_statistics)
-print("\n\n", "mean =", mean, "bytes.")
+print("\n\n", "mean =", mean)
 run_rate = NO_TRIALS / (now - then)
 print("At a run rate of", run_rate, "trials/s.")
 

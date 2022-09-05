@@ -79,7 +79,7 @@ theoretical_statistics = np.random.normal(mu, sigma, statistics.size)
 
 # Check for Normality.
 statistic, p_value = stats.ks_2samp(statistics, theoretical_statistics)
-print("\n\nmu =", mu, "sigma =", sigma)
+print("\n\nmu =", mu, ", sigma =", sigma)
 print("\n\nNormality test, p =", p_value)
 if p_value > critical_ps.left_outer and p_value < critical_ps.right_outer:
     print("Normally distributed :-)")
