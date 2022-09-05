@@ -6,19 +6,20 @@ to compress, the other might be able to. A double whammy.
 
 # spell-checker: disable #
 
-import lzma
 import bz2
 import json
-import random
-import time
+import lzma
+import os
 import statistics
+import time
+
 import matplotlib.pyplot as plt
 import numpy as np
 
 
 X_LABEL = "Bytes"
-FILENAME = "compression/compression-xxkB.json"
-NO_SAMPLES = 64_000
+FILENAME = "compression/compression-512kB.json"
+NO_SAMPLES = 512_000
 NO_TRIALS = 100_000
 PROGRESS_DIVISOR = 100
 
@@ -31,8 +32,7 @@ lzma_filters = [
 
 
 def make_samples(n):
-    for _ in range(n):
-        yield random.getrandbits(8)
+    return os.urandom(n)
 
 
 #  The specific testing code goes into here.

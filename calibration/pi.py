@@ -19,14 +19,15 @@ from numpy import random
 
 
 X_LABEL = "Value"
-FILENAME = "/pi/pi-512kB.json"
-NO_SAMPLES = int(512_000 // 4)   # It takes 4 bytes to create a float sample.
-NO_TRIALS = 100
-PROGRESS_DIVISOR = 25
+FILENAME = "pi/pi-64kB.json"
+NO_SAMPLES = int(64_000 // 8)   # It takes 8 bytes to create a double float sample.
+NO_TRIALS = 100_000
+PROGRESS_DIVISOR = 100
 
 
 #  The specific testing code goes into here.
 def test_trials():
+    rng = np.random.default_rng()    # PCG XSL RR 128/64 random number generator.
     pis = np.empty([0], dtype=float)
 
     for i in range(NO_TRIALS):
@@ -34,7 +35,7 @@ def test_trials():
         if i % PROGRESS_DIVISOR == 0:
             print(i)
         ys = np.empty([NO_SAMPLES], dtype=float)
-        samples = random.rand(NO_SAMPLES)
+        samples = rng.random(NO_SAMPLES, dtype=np.float64)  
         # Have to do this rather than .append for speed.
         for j in range(samples.size):
             y = math.sqrt(1 - (samples[j] ** 2))
@@ -56,11 +57,11 @@ print("At a run rate of", run_rate, "trials/s")
 
 
 # Dump data to a JSON file.
-# stats_list = all_statistics.tolist()
-# json_object = json.dumps(stats_list)
-# with open(FILENAME, "w") as outfile:
-#     # print(json_object)
-#     outfile.write(json_object)
+stats_list = all_statistics.tolist()
+json_object = json.dumps(stats_list)
+with open(FILENAME, "w") as outfile:
+    # print(json_object)
+    outfile.write(json_object)
 
 
 # p values from a cumulative distribution plot
