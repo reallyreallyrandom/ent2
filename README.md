@@ -9,6 +9,8 @@ Perhaps looking like so:-
 
 
 ```
+Testing test-samples/urandom.bin
+
 Permuted compression ratio, (p = 0.9855), FAIL.
 Runs,                       (p = 0.4000), PASS.
 Serial correlation,         (p = 0.0004), FAIL.

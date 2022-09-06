@@ -61,11 +61,10 @@ class critical_ps(float, enum.Enum):
     right_outer = 1 - (ALPHA / 2)
 
 
-
 # Lineprint formatting here.
 def print_result(test_name, result, p_value):
     p = round(p_value, 4)
-    print(test_name, ",     ", "p = ", p, ",", result)
+    print(test_name, ",     ", "p = ", p, ",", result)        #TODO Pretty print. Add red/green colours to PASS/FAIL test.
 
 
 # The filters are required for LZMA compression FORMAT_RAW format. 
@@ -78,19 +77,21 @@ lzma_filters = [
 # Read in samples file.
 # If no filename is supplied, samples will be generated internally.
 # TODO Add a usage text.
-# TODO Add error handling for bad files.
 # ====================================================================
 samples_byte = []
 if len( sys.argv ) > 1:         # Check is a filename has been provided.
-    filename = str(sys.argv[1])
-    with open(filename, "rb") as infile:
-        samples_byte = bytearray(infile.read())    # byte array.
-        assert len(samples_byte) == NO_SAMPLES     # FIXME Handle this a bit nicer. Check that the file is the correct length.
-        print("Testing", filename, "\n")
+    try:
+        filename = str(sys.argv[1])
+        with open(filename, "rb") as infile:
+            samples_byte = bytearray(infile.read())    # byte array.
+            assert len(samples_byte) == NO_SAMPLES     # FIXME Check that the file is the correct length.
+            print("Testing", filename, "\n")
+    except:
+        print("Cound not load", filename)
+        raise SystemExit(1)
 else:
     samples_byte = bytearray(os.urandom(NO_SAMPLES))   # No filename provided, so make internal samples.
     print("Testing internal cryptographic RNG\n")
-
 samples_np = np.array(samples_byte,  dtype=np.uint8)   # 8 bit numpy array.   
 
 
