@@ -24,13 +24,13 @@
             ]
         },
         {
-            "name": "Python: Excursion",
+            "name": "Python: Permutation",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "/mnt/bazinga/ent2/calibration/excursion/excursion-512kB.json"
+                "/mnt/bazinga/ent2/calibration/permutation/permutation-512kB.json"
             ]
         }
         

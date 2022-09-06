@@ -36,6 +36,7 @@ See https://docs.scipy.org/doc/scipy/tutorial/interpolate.html
 import enum
 import json
 import math
+import random
 import sys
 from turtle import color, width
 
@@ -59,26 +60,30 @@ class critical_ps(float, enum.Enum):
 
 
 # read in file.
-all_statistics = []
+statistics = []
 filename = str(sys.argv[1])
 with open(filename, "rb") as infile:
-    all_statistics = json.load(infile)
-    statistics = np.array(all_statistics, dtype=float)
+    statistics = json.load(infile)
+    statistics_np = np.array(statistics, dtype=float)
 
 
 # Decide on how many histogram bins we want.
 # Use the square root of the sample size method.
-no_bins = round(math.sqrt(statistics.size))
+no_bins = round(math.sqrt(statistics_np.size))
 
 
-# Create parallel normal distribution for comparison.
-mu = np.mean(statistics)
-sigma = np.std(statistics)
-theoretical_statistics = np.random.normal(mu, sigma, statistics.size)
+# Create sub-sample and another parallel normal distribution for comparison.
+# Try not to have too many data points to overwhelm the KS test.
+NO_SUBSAMPLES = no_bins
+rng = np.random.default_rng()    # PCG XSL RR 128/64 random number generator.  
+mu = np.mean(statistics_np)
+sigma = np.std(statistics_np)
+sub_sample = rng.choice(statistics_np, NO_SUBSAMPLES)         
+theoretical_sample = np.random.normal(mu, sigma, NO_SUBSAMPLES)
 
 
 # Check for Normality.
-statistic, p_value = stats.ks_2samp(statistics, theoretical_statistics)
+statistic, p_value = stats.ks_2samp(sub_sample, theoretical_sample)
 print("\n\nmu =", mu, ", sigma =", sigma)
 print("\n\nNormality test, p =", p_value)
 if p_value > critical_ps.left_outer and p_value < critical_ps.right_outer:
@@ -89,7 +94,7 @@ else:
 
 
 # Obtain the cummulative distribution.
-hist, bin_edges = np.histogram(statistics, bins=no_bins)
+hist, bin_edges = np.histogram(statistics_np, bins=no_bins)
 pdf = hist / np.sum(hist)
 cdf = np.cumsum(pdf)
 
@@ -107,20 +112,6 @@ interp_func = interp1d(cdf, bin_edges[1:], kind="linear")
 # ynew = interpolate.splev(cutoffs, tck, der=0)
 critical_statistics = interp_func(criticals)
 print("\nCriticals @ p =", criticals, "=", critical_statistics)
-
-
-
-
-
-
-
-
-# print(bin_edges[1:], "\n\n\n", cdf)
-
-
-
-
-
 
 
 # Plot two charts.

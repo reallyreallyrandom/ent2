@@ -90,9 +90,9 @@ def make_samples(n):
 #     samples = infile.read()           # byte array.
 #     # Check that the file is the correct length.
 #     assert len(samples) == 512000
-byte_samples = make_samples(512_000)     # FIXME Delete this line for production.
+samples_byte = make_samples(512_000)     # FIXME Delete this line for production.
 # 8 bit numpy array.
-samples_np = np.array(bytearray(byte_samples),  dtype=np.uint8)       
+samples_np = np.array(bytearray(samples_byte),  dtype=np.uint8)       
 
 
 # ===========================
@@ -121,9 +121,9 @@ print_result("Arithmetic mean value", result, p_value)
 # ======================
 
 
-bz2_compressed_size = len(bz2.compress(byte_samples, compresslevel=9))
+bz2_compressed_size = len(bz2.compress(samples_byte, compresslevel=9))
 lzma_compressed_size = len(lzma.compress(
-    byte_samples, format=lzma.FORMAT_RAW, filters=lzma_filters))
+    samples_byte, format=lzma.FORMAT_RAW, filters=lzma_filters))
 compressed_size = bz2_compressed_size + lzma_compressed_size
 
 # Perform the test.
@@ -217,7 +217,7 @@ print_result("Serial correlation", result, p_value)
 
 # Perform the test.
 _, counts = np.unique(samples_np, return_counts=True)
-assert counts.size == 256        # Connected to the todo above.
+assert counts.size == 256        # Connected to the TODO above.
 test_response = chisquare(counts)
 p_value = test_response.pvalue
 if p_value > critical_ps.left_outer and p_value < critical_ps.right_outer:
@@ -258,23 +258,25 @@ PERM_MU = 1.0                         # Theoretical.
 PERM_SIGMA = 9.056102826054197e-05    # Value confirmed for a 512 kB sample size.
 
 rng = np.random.default_rng()    # PCG XSL RR 128/64 random number generator.
-byte_samples = bytearray(make_samples(samples_np.size))
-bz2_compressed_size = len(bz2.compress(byte_samples, compresslevel=9))
+samples_byte = bytearray(make_samples(samples_np.size))
+bz2_compressed_size = len(bz2.compress(samples_byte, compresslevel=9))
 lzma_compressed_size = len(lzma.compress(
-    byte_samples, format=lzma.FORMAT_RAW, filters=lzma_filters))
+    samples_byte, format=lzma.FORMAT_RAW, filters=lzma_filters))
 
-rng.shuffle(byte_samples)
+rng.shuffle(samples_byte)
 
 bz2_compressed_shuffled_size = len(bz2.compress(
-    byte_samples, compresslevel=9))
+    samples_byte, compresslevel=9))
 lzma_compressed_shuffled_size = len(lzma.compress(
-    byte_samples, format=lzma.FORMAT_RAW, filters=lzma_filters))
+    samples_byte, format=lzma.FORMAT_RAW, filters=lzma_filters))
 ratio = (bz2_compressed_shuffled_size + lzma_compressed_shuffled_size) / \
     (bz2_compressed_size + lzma_compressed_size)
 
 # Perform the test.
-if ratio < 1.00014711:   # Value confirmed for a 512 kB sample size.
+z_score = (ratio - PERM_MU) / (PERM_SIGMA)
+p_value = scipy.stats.norm.cdf(z_score)   # Has to be .cdf() to allow a 0.0 < p < 1.0 range.
+if p_value < critical_ps.right_inner:
     result = "PASS"
 else:
     result = "FAIL"
-print_result("Permuted compression ratio", result, -1)
+print_result("Permuted compression ratio", result, p_value)
