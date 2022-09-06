@@ -64,7 +64,7 @@ class critical_ps(float, enum.Enum):
 # Lineprint formatting here.
 def print_result(test_name, result, p_value):
     p = round(p_value, 4)
-    print(test_name, ",     ", "p = ", p, ",", result)
+    print(test_name, ",     ", "", p, ",", result)
 
 
 # The filters are required for LZMA compression FORMAT_RAW format. 
