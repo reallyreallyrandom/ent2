@@ -50,6 +50,7 @@ from statsmodels.sandbox.stats.runs import runstest_1samp
 
 
 ALPHA = 0.05     # TODO Are we happy with this?
+NO_SAMPLES = 512000   # Fixed for now.
 
 
 # The alpha boundaries.
@@ -74,25 +75,21 @@ lzma_filters = [
 ]   
 
 
-# FIXME This makes random data internally, which makes it easier to test this code.
-# =================================================================================
-def make_samples(n):
-    return os.urandom(n)
-
-
-
-# Read in file.
-# FIXME This is commented out to allow internal randomness generation.
+# Read in samples file.
+# If no filename is supplied, samples will be generated internally.
 # ====================================================================
-# samples = []
-# filename = str(sys.argv[1])
-# with open(filename, "rb") as infile:
-#     samples = infile.read()           # byte array.
-#     # Check that the file is the correct length.
-#     assert len(samples) == 512000
-samples_byte = make_samples(512_000)     # FIXME Delete this line for production.
-# 8 bit numpy array.
-samples_np = np.array(bytearray(samples_byte),  dtype=np.uint8)       
+samples_byte = []
+if len( sys.argv ) > 1:         # Check is a filename has been provided.
+    filename = str(sys.argv[1])
+    with open(filename, "rb") as infile:
+        samples_byte = bytearray(infile.read())    # byte array.
+        assert len(samples_byte) == NO_SAMPLES     # Check that the file is the correct length.
+        print("Testing", filename, "\n")
+else:
+    samples_byte = bytearray(os.urandom(NO_SAMPLES))   # No filename provided, so make internal samples.
+    print("Testing internal cryptographic RNG\n")
+
+samples_np = np.array(samples_byte,  dtype=np.uint8)   # 8 bit numpy array.   
 
 
 # ===========================
@@ -202,7 +199,7 @@ print_result("Runs", result, p_value)
 # Perform the test.
 acf, qstat, p_values = sm.tsa.acf(samples_np, nlags=1, qstat=True)
 p_value = p_values[0]        # The p-values associated with the Q-statistics for lags 1, 2, …, nlags (excludes lag zero). Returned if q_stat is True.
-if p_value < critical_ps.right_inner:
+if p_value > critical_ps.left_outer and p_value < critical_ps.right_outer:
     result = "PASS"
 else:
     result = "FAIL"
@@ -217,7 +214,7 @@ print_result("Serial correlation", result, p_value)
 
 # Perform the test.
 _, counts = np.unique(samples_np, return_counts=True)
-assert counts.size == 256        # Connected to the TODO above.
+# assert counts.size == 256        # Connected to the TODO above.
 test_response = chisquare(counts)
 p_value = test_response.pvalue
 if p_value > critical_ps.left_outer and p_value < critical_ps.right_outer:
@@ -258,7 +255,7 @@ PERM_MU = 1.0                         # Theoretical.
 PERM_SIGMA = 9.056102826054197e-05    # Value confirmed for a 512 kB sample size.
 
 rng = np.random.default_rng()    # PCG XSL RR 128/64 random number generator.
-samples_byte = bytearray(make_samples(samples_np.size))
+# samples_byte = bytearray(make_samples(samples_np.size))
 bz2_compressed_size = len(bz2.compress(samples_byte, compresslevel=9))
 lzma_compressed_size = len(lzma.compress(
     samples_byte, format=lzma.FORMAT_RAW, filters=lzma_filters))
