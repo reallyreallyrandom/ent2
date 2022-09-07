@@ -61,11 +61,10 @@ class critical_ps(float, enum.Enum):
     right_outer = 1 - (ALPHA / 2)
 
 
-
 # Lineprint formatting here.
 def print_result(test_name, result, p_value):
     p = round(p_value, 4)
-    print(test_name, ",     ", "", p, ",", result)
+    print(test_name, ",     ", "", p, ",", result)        #TODO Pretty print. Add red/green colours to PASS/FAIL test.
 
 
 # The filters are required for LZMA compression FORMAT_RAW format. 
@@ -77,16 +76,22 @@ lzma_filters = [
 
 # Read in samples file.
 # If no filename is supplied, samples will be generated internally.
+# TODO Add a usage text.
 # ====================================================================
 samples_byte = []
 if len( sys.argv ) > 1:         # Check is a filename has been provided.
-    filename = str(sys.argv[1])
-    with open(filename, "rb") as infile:
-        samples_byte = bytearray(infile.read())    # byte array.
-        assert len(samples_byte) == NO_SAMPLES     # Check that the file is the correct length.
+    try:
+        filename = str(sys.argv[1])
+        with open(filename, "rb") as infile:
+            samples_byte = bytearray(infile.read())    # byte array.
+            assert len(samples_byte) == NO_SAMPLES     # FIXME Check that the file is the correct length.
+            print("Testing", filename, "\n")
+    except:
+        print("Cound not load", filename)
+        raise SystemExit(1)
 else:
     samples_byte = bytearray(os.urandom(NO_SAMPLES))   # No filename provided, so make internal samples.
-
+    # print("Testing internal cryptographic RNG\n")
 samples_np = np.array(samples_byte,  dtype=np.uint8)   # 8 bit numpy array.   
 
 
@@ -95,14 +100,14 @@ samples_np = np.array(samples_byte,  dtype=np.uint8)   # 8 bit numpy array.
 # ===========================
 
 
-MEAN_MU = 127.5             # Theoretical.
-MEAN_SIGMA = 73.90027064    # Theoretical.
+UNIFORM_MU = 127.5             # Theoretical.
+UNIFORM_SIGMA = 73.90027064    # Theoretical.
 
 sample_mu = np.mean(samples_np)
-sigma_sample_mu = MEAN_SIGMA / math.sqrt(samples_np.size)
+sample_mu_sigma = UNIFORM_SIGMA / math.sqrt(samples_np.size)
 
 # Perform the test.
-z_score = (sample_mu - MEAN_MU) / (sigma_sample_mu)
+z_score = (sample_mu - UNIFORM_MU) / (sample_mu_sigma)
 p_value = scipy.stats.norm.cdf(z_score)   # Has to be .cdf() to allow a 0.0 < p < 1.0 range.
 if p_value > critical_ps.left_outer and p_value < critical_ps.right_outer:
     result = "PASS"
@@ -147,7 +152,7 @@ print_result("Min. entropy",  result, -1)
 
 
 #===============================
-# Monte Carlo vaule for Pi test.
+# Monte Carlo value for Pi test.
 #===============================
 
 
@@ -253,6 +258,7 @@ PERM_MU = 1.0                         # Theoretical.
 PERM_SIGMA = 9.056102826054197e-05    # Value confirmed for a 512 kB sample size.
 
 rng = np.random.default_rng()    # PCG XSL RR 128/64 random number generator.
+# samples_byte = bytearray(make_samples(samples_np.size))
 bz2_compressed_size = len(bz2.compress(samples_byte, compresslevel=9))
 lzma_compressed_size = len(lzma.compress(
     samples_byte, format=lzma.FORMAT_RAW, filters=lzma_filters))
