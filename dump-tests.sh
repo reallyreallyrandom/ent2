@@ -8,7 +8,7 @@
 for value in {1..10000}
 do
     echo $value
-    python   ent2_0.1.0.py  >>  tests-dump.csv
+    python   ent2_0.1.0.dump.py  >>  tests-dump.csv
 done
 
 echo All done
