@@ -43,7 +43,7 @@ from turtle import color, width
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import interpolate, stats
-from scipy.interpolate import UnivariateSpline, interp1d
+from scipy.interpolate import interp1d
 
 
 
@@ -85,7 +85,7 @@ theoretical_sample = np.random.normal(mu, sigma, NO_SUBSAMPLES)
 # Check for Normality.
 statistic, p_value = stats.ks_2samp(sub_sample, theoretical_sample)
 print("\n\nmu =", mu, ", sigma =", sigma)
-print("\n\nNormality test, p =", p_value)
+print("Normality test, p =", p_value)
 if p_value > critical_ps.left_outer and p_value < critical_ps.right_outer:
     print("Normally distributed :-)")
 else:
@@ -106,10 +106,7 @@ criticals = np.array([critical_ps.left_outer,
                       critical_ps.left_inner,
                       critical_ps.right_inner,
                       critical_ps.right_outer])
-# interp_func = UnivariateSpline(cdf, bins_count[1:])
 interp_func = interp1d(cdf, bin_edges[1:], kind="linear")
-# tck = interpolate.splrep(cdf, bins_count[1:])
-# ynew = interpolate.splev(cutoffs, tck, der=0)
 critical_statistics = interp_func(criticals)
 print("\nCriticals @ p =", criticals, "=", critical_statistics)
 
