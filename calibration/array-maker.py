@@ -1,4 +1,5 @@
 """
+MIT License
 
 Copyright (c) 2022:
 Paul Uszak. Email: paul.uszak_at_gmail.com. (Change _at_ to @)
@@ -23,9 +24,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+----------------------------------------------------------------------------
 
 For generating numpy array data to model the simulated test results from 
-our JSON calibration data.
+our JSON calibration data. Model data is exported as NO_EXPORT_POINTS number 
+of x and y coordinates.
 """
 
 # spell-checker: disable #
@@ -36,7 +39,6 @@ import enum
 import json
 import math
 import sys
-from turtle import color
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -44,6 +46,7 @@ from scipy.interpolate import interp1d
 
  
 NO_EXPORT_POINTS = 15   # This is rather important.
+E_DECIMALS = 5   # Precision for export points.
 ALPHA = 0.05
 
 
@@ -65,8 +68,8 @@ class interpolation_ps(float, enum.Enum):
 # Read in calibration file.
 all_statistics = []
 # filename = str(sys.argv[1])
-filename = "/mnt/bazinga/ent2/calibration/entropy/entropy-512kB.json"
-# filename = "/mnt/bazinga/ent2/calibration/excursion/excursion-512kB.json"
+# filename = "/mnt/bazinga/ent2/calibration/entropy/entropy-512kB.json"
+filename = "/mnt/bazinga/ent2/calibration/excursion/excursion-512kB.json"
 # filename = "/mnt/bazinga/ent2/calibration/compression/compression-512kB.json"
 with open(filename, "rb") as infile:
     all_statistics = json.load(infile)
@@ -93,27 +96,32 @@ critical_statistics = reverse_interpolation_function(criticals)
 
 # Interpolation function for export points.
 points_interpolation_function = interp1d(bin_edges[1:], cdf, kind="cubic")
-# first_interpolation_function = UnivariateSpline(bin_edges[1:], cdf, k = 5, s=0.001)    # s is a smoothing factor.
 
 
-# Interpolate N export points for 2nd curve fit.
+# Interpolate N points for export for 2nd curve fit.
 points_x = np.linspace(critical_statistics[0], critical_statistics[1], NO_EXPORT_POINTS)
 points_y = points_interpolation_function(points_x)
+
+# Reduce no. of decimals
+export_points_x = np.around(points_x, decimals=E_DECIMALS)
+export_points_y = np.around(points_y, decimals=E_DECIMALS)
 
 
 # Print out histogram arrays to fit second curve from.
 # These points to go into the ent2 source code.
+# .tolist() adds commas to the output.
 np.set_printoptions(threshold=sys.maxsize)
+print(filename)
 print("x values")
-print(points_x.tolist())
+print(export_points_x.tolist())
 print("\ny values")
-print(points_y.tolist())
+print(export_points_y.tolist())
 
 
 # Fitted export points..
 fig = plt.figure()
 first = plt.subplot(121)
-plt.plot(bin_edges[1:], cdf, color="purple", linewidth=6, label="Raw samples", alpha=0.3)    # Raw data.
+plt.plot(bin_edges[1:], cdf, color="purple", linewidth=2, label="Raw samples")    # Raw data.
 plt.scatter(points_x, points_y, color="purple", marker="o", label="Export points")       # Interpolated data.
 plt.matplotlib.pyplot.axhline(critical_ps.left_outer, color="red", label="")
 plt.matplotlib.pyplot.axhline(critical_ps.left_inner, color="blue", label="")
@@ -128,15 +136,15 @@ plt.grid()
 
 
 # This is the function that makes the calibration cdf in ent2.
-second_interpolation_function = interp1d(points_x, points_y, kind="cubic")
-second_x = np.linspace(np.min(points_x), np.max(points_x), 100)
+second_interpolation_function = interp1d(export_points_x, export_points_y, kind="cubic")
+second_x = np.linspace(np.min(export_points_x), np.max(export_points_x), 100)
 second_y = second_interpolation_function(second_x)
 
 
 # 2nd curve fit derived from first.
 ps = plt.subplot(122)
-plt.plot(bin_edges[1:], cdf, color="purple", linewidth=6, label="Raw samples", alpha=0.3)    # Raw data.
-plt.plot(second_x, second_y, color="purple", linewidth=2, label="Points curve fit")   
+plt.plot(bin_edges[1:], cdf, color="purple", linewidth=10, label="Raw samples", alpha=0.3)    # Raw data.
+plt.plot(second_x, second_y, color="purple", linewidth=3, label="Points curve fit")   
 plt.matplotlib.pyplot.axhline(critical_ps.left_outer, color="red", label="")
 plt.matplotlib.pyplot.axhline(critical_ps.left_inner, color="blue", label="")
 plt.matplotlib.pyplot.axhline(critical_ps.right_inner, color="green", label="")
@@ -146,6 +154,6 @@ plt.ylabel("$p$ value.")
 
 plt.legend()
 plt.grid()
-
+plt.tight_layout()
 plt.show()
 
