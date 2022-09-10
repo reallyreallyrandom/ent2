@@ -9,23 +9,27 @@ Perhaps looking like so:-
 
 
 ```
-Testing test-samples/urandom.bin
+Testing test-samples/urandom.bin.
 
-Permuted compression ratio, (p = 0.9855), FAIL.
-Runs,                       (p = 0.4000), PASS.
-Serial correlation,         (p = 0.0004), FAIL.
+Permuted compression ratio  p = 0.985  FAIL.
+Runs                        p = 0.400  PASS.
+Serial correlation          p = 0.006  FAIL.
 
 SAMPLES ARE NOT IID.
 
-Pure compression,           (p = 0.7897), PASS.
-Chi square distribution,    (p = 0.5000), PASS.
-Arithmetic mean value,      (p = 0.0008), FAIL.
-Monte Carlo value for Pi,   (p = 0.5071), PASS.
-Excursion from mean,        (p = 0.9998), FAIL.
-Min. entropy,               (p = 0.0002), FAIL.
+Pure compression            p = 0.789  PASS.
+Chi square distribution     p = 1.000  PASS.
+Arithmetic mean value       p = 0.000  FAIL.
+Monte Carlo value for Pi    p = 0.507  PASS.
+Excursion from mean         p = 0.999  FAIL.
+Min. entropy                p = 0.000  FAIL.
 
-Min. entropy < 5.9103 bits per byte.
+Min. entropy < 5.31 bits per byte.
 
-SAMPLES UNSUITABLE FOR CRYPTOGRAPHY @ α = 0.0500.
+SAMPLES UNSUITABLE FOR CRYPTOGRAPHY @ α = 0.05.
 ```
+
+
+
+The current release version of `ent2` only accepts sample files that are **exactly** 512,000 bytes in length. Future releases will accommodate 64,000 byte, 128,000 byte and 256,000 byte sample sizes, as well as the current 512,000 byte samples size. Predetermined file sample lengths are absolutely necessary as some of the tests have no algebraic forms and so have to be calibrated via simulation.
 

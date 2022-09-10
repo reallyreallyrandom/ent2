@@ -69,8 +69,8 @@ class interpolation_ps(float, enum.Enum):
 all_statistics = []
 # filename = str(sys.argv[1])
 # filename = "/mnt/bazinga/ent2/calibration/entropy/entropy-512kB.json"
-filename = "/mnt/bazinga/ent2/calibration/excursion/excursion-512kB.json"
-# filename = "/mnt/bazinga/ent2/calibration/compression/compression-512kB.json"
+# filename = "/mnt/bazinga/ent2/calibration/excursion/excursion-512kB.json"
+filename = "/mnt/bazinga/ent2/calibration/compression/compression-512kB.json"
 with open(filename, "rb") as infile:
     all_statistics = json.load(infile)
     statistics = np.array(all_statistics, dtype=float)
@@ -102,7 +102,7 @@ points_interpolation_function = interp1d(bin_edges[1:], cdf, kind="cubic")
 points_x = np.linspace(critical_statistics[0], critical_statistics[1], NO_EXPORT_POINTS)
 points_y = points_interpolation_function(points_x)
 
-# Reduce no. of decimals
+# Reduce no. of decimals.
 export_points_x = np.around(points_x, decimals=E_DECIMALS)
 export_points_y = np.around(points_y, decimals=E_DECIMALS)
 

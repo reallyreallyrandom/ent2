@@ -64,17 +64,20 @@ def hidden_data():
 
     global compression_512_x
     compression_512_x = \
-        [1026642.38987, 1026662.00831, 1026681.62676, 1026701.2452, 1026720.86365, 1026740.4821, 1026760.10054, 1026779.71899, 1026799.33743, 1026818.95588, 1026838.57433, 1026858.19277, 1026877.81122, 1026897.42967, 1026917.04811]
+        [1026698.85226, 1026718.41452, 1026737.97678, 1026757.53905, 1026777.10131, 
+        1026796.66357, 1026816.22583, 1026835.7881, 1026855.35036, 1026874.91262, 
+        1026894.47489, 1026914.03715, 1026933.59941, 1026953.16168, 1026972.72394]
     global compression_512_y 
     compression_512_y = \
-        [0.02001, 0.03076, 0.04797, 0.07386, 0.11925, 0.18952, 0.27648, 0.38763, 
-        0.51385, 0.63008, 0.74134, 0.83668, 0.90536, 0.9522, 0.97996]
+        [0.01999, 0.03041, 0.04642, 0.07446, 0.11734, 0.18638, 0.27715, 0.38938, 
+        0.50839, 0.63119, 0.74003, 0.83449, 0.9037, 0.95095, 0.98013]
 
 
     global excursion_512_x 
     excursion_512_x = \
-        [24836.93383, 28783.02858, 32729.12332, 36675.21807, 40621.31281, 44567.40755, 48513.5023, 52459.59704,
-        56405.69179, 60351.78653, 64297.88128, 68243.97602, 72190.07076, 76136.16551, 80082.26025]
+        [24836.93383, 28783.02858, 32729.12332, 36675.21807, 40621.31281, 44567.40755, 
+        48513.5023, 52459.59704, 56405.69179, 60351.78653, 64297.88128, 68243.97602, 
+        72190.07076, 76136.16551, 80082.26025]
     global excursion_512_y 
     excursion_512_y = \
         [0.01999, 0.0712, 0.16181, 0.27988, 0.40554, 0.5254, 0.63327, 0.72418,
@@ -116,7 +119,7 @@ def interpolate_p_value(points_x, points_y, test_statistic):
 def print_result(test_name, result, p_value):
     p = np.around(p_value, decimals=P_DECIMALS)
     # TODO Pretty print. Add red/green colours to PASS/FAIL test?
-    print(test_name, ",     ", "p = ", p, ",", result, ".")
+    print(test_name.ljust(28), "p =", str(p).ljust(7), str(result) + ".")
 
 
 # Read in samples file.
@@ -135,7 +138,7 @@ if len(sys.argv) > 1:         # Check is a filename has been provided.
             samples_byte = bytearray(infile.read())    # byte array.
             # FIXME Check that the file is the correct length.
             assert len(samples_byte) == NO_SAMPLES
-            print("Testing", filename, ".\n")
+            print("Testing", filename + ".\n")
     except:
         print("Could not load", filename)
         raise SystemExit(1)
@@ -153,7 +156,7 @@ samples_np = np.array(samples_byte,  dtype=np.uint8)   # 8 bit numpy array.
 
 
 PERM_MU = 1.0                         # Theoretical.
-PERM_SIGMA = 9.056102826054197e-05    # Value confirmed for a 512 kB sample size.
+PERM_SIGMA = 9.082622798203179e-05    # Value confirmed for a 512 kB sample size.
 
 rng = np.random.default_rng()    # PCG XSL RR 128/64 random number generator.
 bz2_compressed_size = len(bz2.compress(samples_byte))
@@ -382,7 +385,7 @@ print()
 # Randomness decision
 #====================
 if iid_pass_counter == NO_IID_TESTS and randomness_pass_counter == NO_RANDOMNESS_TESTS:
-    print("SAMPLES SUITABLE FOR CRYPTOGRAPHY @ α =", ALPHA, ".")
+    print("SAMPLES SUITABLE FOR CRYPTOGRAPHY @ α =", str(ALPHA) + ".")
 else:
-    print("SAMPLES UNSUITABLE FOR CRYPTOGRAPHY @ α =", ALPHA, ".")
+    print("SAMPLES UNSUITABLE FOR CRYPTOGRAPHY @ α =", str(ALPHA) + ".")
 print()

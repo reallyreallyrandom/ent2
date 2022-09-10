@@ -21,14 +21,7 @@ X_LABEL = "Bytes"
 FILENAME = "compression/compression-512kB.json"
 NO_SAMPLES = 512_000
 NO_TRIALS = 100_000
-PROGRESS_DIVISOR = 100
-
-
-# The filters are required for FORMAT_RAW format.
-lzma_filters = [
-    {"id": lzma.FILTER_DELTA, "dist": 1},
-    {"id": lzma.FILTER_LZMA2, "preset": 9 | lzma.PRESET_EXTREME},
-]
+PROGRESS_DIVISOR = 10
 
 
 def make_samples(n):
@@ -44,9 +37,8 @@ def test_trials():
         if i % PROGRESS_DIVISOR == 0:
             print(i)
         samples = bytearray(make_samples(NO_SAMPLES))
-        bz2_compressed_size = len(bz2.compress(samples, compresslevel=9))
-        lzma_compressed_size = len(lzma.compress(
-            samples, format=lzma.FORMAT_RAW, filters=lzma_filters))
+        bz2_compressed_size = len(bz2.compress(samples))
+        lzma_compressed_size = len(lzma.compress(samples))
         compressed_sizes = np.append(
             compressed_sizes, (bz2_compressed_size + lzma_compressed_size))
     return compressed_sizes

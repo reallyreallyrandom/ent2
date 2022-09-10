@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "Current File",
             "type": "python",
             "request": "launch",
             "program": "${file}",
@@ -13,7 +13,18 @@
             "justMyCode": true
         },
         {
-            "name": "Python: ent2 debug",
+            "name": "Data Viewer",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "/mnt/bazinga/ent2/calibration/permutation/permutation-512kB.json"
+            ]
+        },
+        {
+            "name": "ent2 nist-bbs",
             "type": "python",
             "request": "launch",
             "program": "${file}",
@@ -24,7 +35,7 @@
             ]
         },
         {
-            "name": "Python: ent2-Shakespear's works in text.",
+            "name": "ent2-Shakespear's works in text.",
             "type": "python",
             "request": "launch",
             "program": "${file}",
@@ -33,6 +44,5 @@
                 "/mnt/bazinga/ent2/test-samples/shakespeare.txt"
             ]
         }
-        
     ]
 }
