@@ -101,8 +101,6 @@ pdf = hist / np.sum(hist)
 cdf = np.cumsum(pdf)
 
 
-# TODO Try to improve the interpolatioin smoothing.
-# FIXME Firm up these critical alpha values with Adam.
 # Interpolate p -> test statistic.
 criticals = np.array([critical_ps.left_outer,
                       critical_ps.left_inner,
