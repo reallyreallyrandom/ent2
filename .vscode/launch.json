@@ -24,7 +24,7 @@
             ]
         },
         {
-            "name": "ent2 nist-bbs",
+            "name": "ent2 csprng",
             "type": "python",
             "request": "launch",
             "program": "${file}",

@@ -20,7 +20,7 @@ import numpy as np
 X_LABEL = "Bytes"
 FILENAME = "compression/compression-512kB.json"
 NO_SAMPLES = 512_000
-NO_TRIALS = 100_000
+NO_TRIALS = 100
 PROGRESS_DIVISOR = 10
 
 
@@ -54,11 +54,11 @@ print("At a run rate of", run_rate, "trials/s.")
 
 
 # Dump data to a JSON file.
-stats_list = all_statistics.tolist()
-json_object = json.dumps(stats_list)
-with open(FILENAME, "w") as outfile:
-    # print(json_object)
-    outfile.write(json_object)
+# stats_list = all_statistics.tolist()
+# json_object = json.dumps(stats_list)
+# with open(FILENAME, "w") as outfile:
+#     # print(json_object)
+#     outfile.write(json_object)
 
 
 # p values from a cumulative distribution plot.
