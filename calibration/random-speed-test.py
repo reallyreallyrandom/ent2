@@ -1,6 +1,11 @@
 """
 Tests the relative rate of random number generation.
 Compares Python , OS.Random and Numpy.
+
+I get:-
+Pythons's default, 6.755408763885498
+Cryptographic OS generator, 0.26140356063842773
+Numpy, 0.3641190528869629
 """
 
 

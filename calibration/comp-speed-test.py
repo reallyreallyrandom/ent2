@@ -16,13 +16,14 @@ not be noticed external to the algorithm.
 
 # spell-checker: disable #
 
+import bz2
 import lzma
+import os
 import random
 
 
 def make_samples(n):
-    for _ in range(n):
-        yield random.getrandbits(8)
+    return os.urandom(n)
 
 
 my_filters = [
@@ -31,8 +32,16 @@ my_filters = [
 ]
 
 
-for i in range(100):
-    samples = bytearray(make_samples(512_000))
-    compressed_size = len(lzma.compress(
-        samples, format=lzma.FORMAT_RAW, filters=my_filters))
-    print(compressed_size)
+for i in range(20):
+    samples = bytearray(make_samples(100_000))
+    bz2_compressed_size = len(bz2.compress(samples, compresslevel=9))
+    lzma_compressed_size = len(lzma.compress(samples, format=lzma.FORMAT_RAW, filters=my_filters))
+    print(bz2_compressed_size, lzma_compressed_size)
+
+
+for i in range(20):
+    samples = bytearray(make_samples(100_000))
+    bz2_compressed_size = len(bz2.compress(samples))
+    lzma_compressed_size = len(lzma.compress(samples))
+    print(bz2_compressed_size, lzma_compressed_size)
+
